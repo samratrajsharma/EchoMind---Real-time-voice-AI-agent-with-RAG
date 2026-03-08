@@ -13,6 +13,8 @@ sentence-transformers
 
 ollama
 
+langchain-text-splitters
+
 deepgram-sdk
 
 elevenlabs
@@ -28,3 +30,7 @@ python-dotenv
 websockets
 
 aiohttp
+
+dotenv
+
+groq
