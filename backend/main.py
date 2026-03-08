@@ -5,6 +5,7 @@ from backend.vector_db.qdrant_client import init_qdrant
 from backend.rag.ingest import ingest_document
 from backend.rag.retriever import retrieve_context
 from backend.services.llm_service import generate_answer
+from backend.rag.document_loader import load_document
 from backend.config import UPLOAD_DIR
 
 app = FastAPI()
@@ -27,6 +28,8 @@ async def upload_document(file: UploadFile = File(...)):
 
     with open(filepath, "wb") as f:
         f.write(contents)
+
+    text = load_document(filepath)
 
     chunks = ingest_document(text, file.filename)
 

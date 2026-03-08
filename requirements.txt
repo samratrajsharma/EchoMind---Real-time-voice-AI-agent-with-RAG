@@ -34,3 +34,7 @@ aiohttp
 dotenv
 
 groq
+
+pypdf 
+
+python-docx
