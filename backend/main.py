@@ -42,7 +42,7 @@ async def upload_document(file: UploadFile = File(...)):
 @app.post("/ask")
 def ask_question(query: str):
 
-    context = retrieve_context(query)
+    context, sources = retrieve_context(query)
 
     prompt = f"""
 You are an AI assistant.
@@ -60,5 +60,6 @@ Question:
 
     return {
         "answer": answer,
-        "context_used": context
+        "context_used": context,
+        "sources" : sources
     }

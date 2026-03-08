@@ -6,9 +6,6 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 def retrieve_context(query: str, k: int = 3):
-    """
-    Retrieve the most relevant chunks from Qdrant using semantic search.
-    """
 
     query_vector = model.encode(query).tolist()
 
@@ -19,9 +16,17 @@ def retrieve_context(query: str, k: int = 3):
     )
 
     contexts = []
+    sources = []
 
     for point in results.points:
-        if "text" in point.payload:
-            contexts.append(point.payload["text"])
 
-    return "\n".join(contexts)
+        payload = point.payload
+
+        contexts.append(payload["text"])
+
+        sources.append({
+            "source": payload["source"],
+            "chunk_id": payload["chunk_id"]
+        })
+
+    return "\n".join(contexts), sources

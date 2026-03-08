@@ -14,7 +14,7 @@ splitter = RecursiveCharacterTextSplitter(
 )
 
 
-def ingest_document(text, source):
+def ingest_document(text: str, source: str):
 
     chunks = splitter.split_text(text)
 
@@ -22,7 +22,7 @@ def ingest_document(text, source):
 
     points = []
 
-    for chunk, vector in zip(chunks, vectors):
+    for idx, (chunk, vector) in enumerate(zip(chunks, vectors)):
 
         points.append(
             PointStruct(
@@ -30,7 +30,8 @@ def ingest_document(text, source):
                 vector=vector.tolist(),
                 payload={
                     "text": chunk,
-                    "source": source
+                    "source": source,
+                    "chunk_id": idx
                 }
             )
         )

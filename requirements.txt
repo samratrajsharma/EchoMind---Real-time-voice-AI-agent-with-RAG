@@ -38,3 +38,5 @@ groq
 pypdf 
 
 python-docx
+
+rank-bm25
