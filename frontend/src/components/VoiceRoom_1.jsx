@@ -4,14 +4,14 @@ export default function VoiceRoom() {
 
   const [transcript, setTranscript] = useState("");
   const [response, setResponse] = useState("");
+  const [sources, setSources] = useState([]);
+  const [latency, setLatency] = useState(null);
+  const [trace, setTrace] = useState([]);
   const [file, setFile] = useState(null);
 
   const uploadDocument = async () => {
 
-    if (!file) {
-      alert("Please select a file first");
-      return;
-    }
+    if (!file) return;
 
     const formData = new FormData();
     formData.append("file", file);
@@ -20,44 +20,59 @@ export default function VoiceRoom() {
       method: "POST",
       body: formData
     });
-
-    alert("Document uploaded successfully");
   };
 
   const startListening = () => {
 
     const recognition = new window.webkitSpeechRecognition();
+
     recognition.lang = "en-US";
+    recognition.interimResults = true;
 
     recognition.onresult = async (event) => {
 
-      const text = event.results[0][0].transcript;
+      let text = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        text += event.results[i][0].transcript;
+      }
 
       setTranscript(text);
 
-      const res = await fetch(
-        `http://127.0.0.1:8000/ask-stream?query=${encodeURIComponent(text)}`
-      );
+      if (event.results[0].isFinal) {
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
+        const res = await fetch(
+          `http://127.0.0.1:8000/ask-stream?query=${encodeURIComponent(text)}`
+        );
 
-      let aiText = "";
+        const src = res.headers.get("X-Sources");
+        const ragLatency = res.headers.get("X-Rag-Latency");
+        const traceSteps = res.headers.get("X-Trace");
 
-      while (true) {
+        if (src) setSources(src.split(","));
+        if (ragLatency) setLatency(ragLatency);
+        if (traceSteps) setTrace(traceSteps.split("|"));
 
-        const { done, value } = await reader.read();
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
 
-        if (done) break;
+        let aiText = "";
 
-        const chunk = decoder.decode(value);
+        while (true) {
 
-        aiText += chunk;
+          const { done, value } = await reader.read();
 
-        setResponse(aiText);
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+
+          aiText += chunk;
+
+          setResponse(aiText);
+        }
+
+        speak(aiText);
       }
-
-      speak(aiText);
     };
 
     recognition.start();
@@ -66,6 +81,7 @@ export default function VoiceRoom() {
   const speak = (text) => {
 
     const speech = new SpeechSynthesisUtterance(text);
+
     speech.lang = "en-US";
 
     window.speechSynthesis.speak(speech);
@@ -93,11 +109,28 @@ export default function VoiceRoom() {
         🎤 Speak
       </button>
 
-      <h3>User:</h3>
+      <h3>User</h3>
       <p>{transcript}</p>
 
-      <h3>AI:</h3>
+      <h3>AI</h3>
       <p>{response}</p>
+
+      <h3>Sources Used</h3>
+      <ul>
+        {sources.map((s, i) => (
+          <li key={i}>{s}</li>
+        ))}
+      </ul>
+
+      <h3>Latency</h3>
+      <p>RAG: {latency} ms</p>
+
+      <h3>Agent Trace</h3>
+      <ul>
+        {trace.map((t, i) => (
+          <li key={i}>{t}</li>
+        ))}
+      </ul>
 
     </div>
   );
