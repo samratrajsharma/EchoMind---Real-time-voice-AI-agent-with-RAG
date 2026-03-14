@@ -3,7 +3,8 @@ from groq import Groq
 
 from backend.config import (
     MODEL_PROVIDER,
-    OLLAMA_MODEL
+    OLLAMA_MODEL,
+    GROQ_MODEL
 )
 
 groq_client = Groq()
@@ -53,9 +54,9 @@ def stream_generated_answer(prompt: str):
             if 'message' in chunk and 'content' in chunk['messages']:
                 yield chunk['messages']['content']
 
-    elif MODEL_PROVIDER == 'gorq':
+    elif MODEL_PROVIDER == 'groq':
         stream = groq_client.chat.completions.create(
-            model = Groq,
+            model = GROQ_MODEL,
             messages = [{'role': 'user', 'content':prompt}],
             stream = True
         )
