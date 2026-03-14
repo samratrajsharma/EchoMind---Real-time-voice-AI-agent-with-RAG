@@ -39,3 +39,30 @@ def generate_answer(prompt: str):
 
     else:
         raise ValueError(f"Unsupported MODEL_PROVIDER: {MODEL_PROVIDER}")
+    
+
+def stream_generated_answer(prompt: str):
+    if MODEL_PROVIDER == 'ollama':
+        stream = ollama.chat(
+            model = OLLAMA_MODEL,
+            messages = [{'role': 'user', 'content':prompt}],
+            stream = True
+        )
+
+        for chunk in stream:
+            if 'message' in chunk and 'content' in chunk['messages']:
+                yield chunk['messages']['content']
+
+    elif MODEL_PROVIDER == 'gorq':
+        stream = groq_client.chat.completions.create(
+            model = Groq,
+            messages = [{'role': 'user', 'content':prompt}],
+            stream = True
+        )
+
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+
+    else:
+        raise ValueError('Unsupported MODEL_PROVIDER')
