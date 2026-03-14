@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 import os
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
 from backend.vector_db.qdrant_client import init_qdrant
@@ -9,11 +10,19 @@ from backend.services.llm_service import generate_answer, stream_generated_answe
 from backend.rag.document_loader import load_document
 from backend.config import UPLOAD_DIR
 from backend.services.memory import ConversationMemory
-from livekit import api
+from livekit.api import AccessToken, VideoGrants
 from backend.config import LIVEKIT_API_KEY, LIVEKIT_API_SECRET
 
 app = FastAPI()
 memory = ConversationMemory()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods =['*'],
+    allow_headers=['*'],
+)
 
 
 @app.on_event("startup")
@@ -74,7 +83,7 @@ Question:
         "sources" : sources
     }
 
-@app.post('/ask-stream')
+@app.get('/ask-stream')
 def ask_stream(query:str):
     context, sources = retrieve_context(query)
 
@@ -108,23 +117,19 @@ Question:
     return StreamingResponse(stream(),media_type = 'text/plain')
 
 @app.get("/livekit-token")
-def get_livekit_token(identity: str = "user", room: str = "echomind-room"):
+def get_livekit_token():
 
-    token = (
-        api.AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
-        .with_identity(identity)
-        .with_name(identity)
-        .with_grants(
-            api.VideoGrants(
-                room_join=True,
-                room=room,
-                can_publish=True,
-                can_subscribe=True,
-            )
+    token = AccessToken("LIVEKIT_API_KEY","LIVEKIT_API_SECRET")
+
+    token.identity = 'user'
+
+    token.with_grants(
+        VideoGrants(
+            room_join = True,
+            room = 'echomind-room',
+            can_publish = True,
+            can_subscribe= True
         )
     )
 
-    return {
-        "token": token.to_jwt(),
-        "room": room
-    }
+    return {"token": token.to_jwt()}

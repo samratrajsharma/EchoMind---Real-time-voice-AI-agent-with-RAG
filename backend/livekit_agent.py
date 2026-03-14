@@ -38,6 +38,10 @@ if __name__ == "__main__":
 
     cli.run_app(
         WorkerOptions(
-            entrypoint_fnc=entrypoint
+            entrypoint_fnc= entrypoint,
+            ws_url= 'YOUR - LIVEKIT_URL',
+            api_key = 'devkey',
+            api_secret= 'secret'
         )
     )
+
