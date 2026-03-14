@@ -71,66 +71,79 @@ export default function VoiceRoom() {
           setResponse(aiText);
         }
 
-        speak(aiText);
+        const speech = new SpeechSynthesisUtterance(aiText);
+        speech.lang = "en-US";
+        window.speechSynthesis.speak(speech);
       }
     };
 
     recognition.start();
   };
 
-  const speak = (text) => {
-
-    const speech = new SpeechSynthesisUtterance(text);
-
-    speech.lang = "en-US";
-
-    window.speechSynthesis.speak(speech);
-  };
-
   return (
-    <div style={{ padding: 40 }}>
+    <div className="main-grid">
 
-      <h2>EchoMind AI Voice Assistant</h2>
+      <div className="card upload-card">
+        <h2>Knowledge Base</h2>
 
-      <h3>Upload Knowledge Document</h3>
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+        />
 
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
+        <button onClick={uploadDocument}>
+          Upload Document
+        </button>
+      </div>
 
-      <button onClick={uploadDocument}>
-        Upload
-      </button>
+      <div className="card voice-card">
 
-      <hr />
+        <h2>Voice Interaction</h2>
 
-      <button onClick={startListening}>
-        🎤 Speak
-      </button>
+        <button className="mic-btn" onClick={startListening}>
+          🎤 Speak
+        </button>
 
-      <h3>User</h3>
-      <p>{transcript}</p>
+        <div className="panel">
+          <h3>User</h3>
+          <p>{transcript}</p>
+        </div>
 
-      <h3>AI</h3>
-      <p>{response}</p>
+        <div className="panel">
+          <h3>AI</h3>
+          <p>{response}</p>
+        </div>
 
-      <h3>Sources Used</h3>
-      <ul>
-        {sources.map((s, i) => (
-          <li key={i}>{s}</li>
-        ))}
-      </ul>
+      </div>
 
-      <h3>Latency</h3>
-      <p>RAG: {latency} ms</p>
+      <div className="card rag-card">
 
-      <h3>Agent Trace</h3>
-      <ul>
-        {trace.map((t, i) => (
-          <li key={i}>{t}</li>
-        ))}
-      </ul>
+        <h2>RAG Insights</h2>
+
+        <div className="panel">
+          <h3>Sources</h3>
+          <ul>
+            {sources.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="panel">
+          <h3>Latency</h3>
+          <p>{latency} ms</p>
+        </div>
+
+        <div className="panel">
+          <h3>Agent Trace</h3>
+          <ul>
+            {trace.map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+          </ul>
+        </div>
+
+      </div>
 
     </div>
   );
