@@ -288,32 +288,37 @@ Example:
 # 🖼 Screenshots
 
 ## Model Selection
+![Model Choice](output_images/Model_Choice.png)
 
-![Model Choice](outputs_images/Model_Choice.png)
+---
 
 ## Document Upload
+![Document Upload](output_images/Document_Upload.png)
 
-![Document Upload](outputs_images/Document_Upload.png)
+---
 
 ## Results using Groq API
+![Groq Results](output_images/Results_Fetched_Groq_API.png)
 
-![Groq Results](outputs_images/Results_Fetched_Groq_API.png)
+---
 
 ## Results using Ollama
+![Ollama Results](output_images/Results_Fetched_Ollama.png)
 
-![Ollama Results](outputs_images/Results_Fetched_Ollama.png)
+---
 
 ## AI Output
+![AI Output](output_images/Al_Output.png)
 
-![AI Output](outputs_images/Al_Output.png)
+---
 
 ## Updated AI Output
+![AI Output Updated](output_images/Al_Output_Updated_Ul.png)
 
-![AI Output Updated](outputs_images/Al_Output_Updated_Ul.png)
+---
 
 ## Retrieved Details
-
-![Details](outputs_images/Details_Fetched.png)
+![Details](output_images/Details_Fetched.png)
 
 ------------------------------------------------------------------------
 
